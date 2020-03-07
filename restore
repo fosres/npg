@@ -3,7 +3,7 @@
 #include <string.h>
 
 #define CHUNK_SIZE 4096
-
+#define CONTEXT	"TESTING"
 static int
 npg_encrypt(const char *target_file, const char *source_file,
         const unsigned char key[crypto_secretstream_xchacha20poly1305_KEYBYTES])
@@ -87,6 +87,8 @@ void npg_genkeys(unsigned char * pk,unsigned char *sk)	{
 
 }
 
+
+
 int
 main(int argc,char**argv)
 {
@@ -122,26 +124,43 @@ main(int argc,char**argv)
 
 	npg_genkeys(publickey,secretkey);
 
-	size_t i = 0;
+	unsigned char encryption_subkey[64];
 
-	while ( i < 32 )	{
+	unsigned char signature_subkey[64];
+
+	crypto_kdf_derive_from_key(encryption_subkey,64,1,CONTEXT,secretkey);	
+	
+	crypto_kdf_derive_from_key(signature_subkey,64,2,CONTEXT,secretkey);	
+	
+	size_t i = 0;
+	
+	printf("Printing Encryption Subkey:\n");	
+	
+		while ( i < 64 )	{
 		
-		printf("%.2x|",publickey[i]);
+		if ( i%32 == 0){putchar(0xa);putchar(0xa);}		
+
+		printf("%.2x|",encryption_subkey[i]);
 		
 		i++;
-	}
-
-	putchar(0xa);
-
+	}	
+	
 	i = 0;
 	
-	while ( i < 32 )	{
+	putchar(0xa);putchar(0xa);
+
+	printf("Printing Signature Subkey:\n");	
+
+		while ( i < 64 )	{
 		
-		printf("%.2x|",secretkey[i]);
+		if ( i%32 == 0){putchar(0xa);putchar(0xa);}		
+
+		printf("%.2x|",signature_subkey[i]);
 		
 		i++;
-	}
-
-   	putchar(0xa); 
+	}	
+	
+	i = 0;
+		
 	return 0;
 }
