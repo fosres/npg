@@ -197,12 +197,15 @@ main(int argc,char**argv)
 		i = 0;
 		printf("Printing argon2id hash of password that has length:%llu\n",crypto_pwhash_STRBYTES);
 
-		while ( i < crypto_pwhash_STRBYTES ) {
+		while ( i < crypto_secretstream_xchacha20poly1305_KEYBYTES ) {
 			
 			printf("%.2x|",out[i]);
 	
 			i++;
 		}		
-			
+	
+	putchar(0xa);
+	
+	printf("Length of keybytes:%llu\n",crypto_secretstream_xchacha20poly1305_KEYBYTES);			
 	return 0;
 }
