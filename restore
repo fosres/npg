@@ -6,7 +6,7 @@
 
 #define CONTEXT	"TESTING"
 
-#define MAXSIZE	4096
+#define MAXSIZE	4096	
 static int
 npg_encrypt(const char *target_file, const char *source_file,
         const unsigned char key[crypto_secretstream_xchacha20poly1305_KEYBYTES])
@@ -171,24 +171,38 @@ main(int argc,char**argv)
 	
 		memset(out,0x0,crypto_pwhash_STRBYTES);
 		
+		sodium_mlock(out,crypto_pwhash_STRBYTES);
+		unsigned char salt[crypto_pwhash_SALTBYTES];
+
+		memset(salt,0x0,crypto_pwhash_SALTBYTES);
+
+		sodium_mlock(salt,crypto_pwhash_SALTBYTES);
+
 		unsigned char pwd[MAXSIZE+1];
 	
 		memset(pwd,0x0,MAXSIZE+1);
+		
+		sodium_mlock(pwd,MAXSIZE*sizeof(unsigned char));
 
 		randombytes_buf(pwd,MAXSIZE);
 		
 		i = 0;
 		
-		printf("Printing 4096 byte-randomly generated password(produces 128 rows of 32 bytes\n");
+		if(crypto_pwhash(out,crypto_pwhash_STRBYTES,pwd,strnlen(pwd,MAXSIZE),salt,crypto_pwhash_OPSLIMIT_INTERACTIVE,crypto_pwhash_MEMLIMIT_INTERACTIVE,crypto_pwhash_ALG_DEFAULT) != 0)	{
+				
+				fprintf(stderr,"Error: Ran out of memory for pwhash\n");
 
-		while (i < MAXSIZE)	{
-			
-			if (i%32==0){putchar(0xa);}	
-			printf("%.2x|",pwd[i]);	
-			i++;
-		}
-
+				exit(1);
+			}
 		i = 0;
+		printf("Printing argon2id hash of password that has length:%llu\n",crypto_pwhash_STRBYTES);
 
+		while ( i < crypto_pwhash_STRBYTES ) {
+			
+			printf("%.2x|",out[i]);
+	
+			i++;
+		}		
+			
 	return 0;
 }
