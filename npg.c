@@ -291,6 +291,19 @@ main(int argc,char**argv)
 	unsigned char * open_cpk_pwd = (unsigned char*)calloc(MAXSIZE+1+crypto_box_MACBYTES,sizeof(unsigned char));
 	
 	npg_open_pwd(open_cpk_pwd,cpk_pwd,MAXSIZE+1+crypto_box_MACBYTES,nonce,publickey,signature_subkey);
+
+	if (strncmp(pwd,open_cpk_pwd,MAXSIZE+1+crypto_box_MACBYTES) != 0)	{
+
+		printf("Error:Decrypted password and original password are not the same!\n");
+		
+		exit(1);
+	}
+
+	else			{
+
+		printf("Good news,password and open_cpk_pwd match perfectly\n");
+
+	}
 #if 0	
 	while ( i < (crypto_box_MACBYTES + MAXSIZE + 1) )	{
 		
