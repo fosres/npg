@@ -3,7 +3,10 @@
 #include <string.h>
 
 #define CHUNK_SIZE 4096
+
 #define CONTEXT	"TESTING"
+
+#define MAXSIZE	4096
 static int
 npg_encrypt(const char *target_file, const char *source_file,
         const unsigned char key[crypto_secretstream_xchacha20poly1305_KEYBYTES])
@@ -160,7 +163,32 @@ main(int argc,char**argv)
 		i++;
 	}	
 	
+	putchar(0xa);	
+	
 	i = 0;
+	
+		unsigned char out[crypto_secretstream_xchacha20poly1305_KEYBYTES];
+	
+		memset(out,0x0,crypto_pwhash_STRBYTES);
 		
+		unsigned char pwd[MAXSIZE+1];
+	
+		memset(pwd,0x0,MAXSIZE+1);
+
+		randombytes_buf(pwd,MAXSIZE);
+		
+		i = 0;
+		
+		printf("Printing 4096 byte-randomly generated password(produces 128 rows of 32 bytes\n");
+
+		while (i < MAXSIZE)	{
+			
+			if (i%32==0){putchar(0xa);}	
+			printf("%.2x|",pwd[i]);	
+			i++;
+		}
+
+		i = 0;
+
 	return 0;
 }
