@@ -1,18 +1,29 @@
 Printing Encryption Subkey:
 
 
-52|d6|13|75|6c|63|0a|f4|ea|83|8a|73|6b|d4|f4|e0|f0|45|89|b0|41|9d|b8|e8|c8|28|0b|ff|f7|a3|fe|70|
+f9|52|28|f4|ac|28|e4|de|bb|38|84|ab|5e|1e|d2|71|4a|b2|81|84|f2|08|48|32|28|67|be|33|a1|23|5a|ec|
 
-4d|b5|00|ec|e3|c5|17|69|bf|52|69|a4|2a|6b|2b|76|f9|89|5f|44|8e|eb|34|a9|ba|d7|66|cb|4b|82|8f|e8|
+2c|a8|e9|bf|4f|8c|e1|db|a6|0a|5f|59|2b|54|4d|27|3d|38|c5|a2|45|58|88|8b|4b|35|45|ae|4a|13|d7|d5|
 
 Printing Signature Subkey:
 
 
-d4|66|99|0b|72|cb|84|8f|dd|c7|3e|0d|70|51|bd|b8|7d|3a|28|44|99|45|ee|9b|0d|a6|71|27|a0|d0|00|9a|
+2f|47|ad|cc|bb|ac|e4|a0|c1|ef|b0|b6|69|62|02|32|86|66|a3|b9|5a|07|eb|7a|3a|3c|ef|92|d3|33|4b|39|
 
-bf|ed|99|fa|5a|57|89|20|ec|81|79|a0|e3|6c|de|98|05|1e|02|e6|74|48|1b|3e|c4|ac|51|0e|07|d1|4d|d0|
+e2|8e|3b|c7|0d|a5|04|f4|2e|f4|02|e2|4f|6a|e6|7c|c4|34|d5|26|17|19|e4|d7|69|8a|6c|5c|78|64|af|b5|
 Printing argon2id hash of password that has length:128
-92|ad|74|ff|d6|ac|2e|a8|97|cf|d3|c6|3a|c4|5f|62|19|43|1a|c5|59|9d|27|a7|b8|d9|2f|48|7c|01|e2|46|
+af|ef|b3|f8|40|61|12|f2|44|cd|18|88|9c|3d|75|d7|f5|31|7b|97|3a|c6|e9|20|a0|b8|ea|ed|3b|13|7f|1b|
 Length of keybytes:32
 Printing public key-encryption-subkey authenticated password whose length is 117:
-Good news,password and open_cpk_pwd match perfectly
+Printing pwd:
+
+74|f7|32|ab|f6|3d|26|df|12|5c|0e|74|a6|28|a1|92|da|4d|ac|1f|6d|32|57|9a|3d|9c|27|c9|ce|ba|66|7f|
+49|8d|59|0d|a8|d9|1f|45|6e|fc|ee|d1|f8|fc|76|83|bb|3c|97|d4|1a|87|30|37|bd|6d|38|c2|34|1c|f4|d3|
+c0|c7|47|23|53|1c|66|a1|28|c8|c4|26|2f|cf|f8|31|81|0f|ba|70|91|66|d9|b5|85|ac|88|9b|1a|1c|66|11|
+87|1a|a8|7e|00|
+Printing open_cpk_pwd:
+
+74|f7|32|ab|f6|3d|26|df|12|5c|0e|74|a6|28|a1|92|da|4d|ac|1f|6d|32|57|9a|3d|9c|27|c9|ce|ba|66|7f|
+49|8d|59|0d|a8|d9|1f|45|6e|fc|ee|d1|f8|fc|76|83|bb|3c|97|d4|1a|87|30|37|bd|6d|38|c2|34|1c|f4|d3|
+c0|c7|47|23|53|1c|66|a1|28|c8|c4|26|2f|cf|f8|31|81|0f|ba|70|91|66|d9|b5|85|ac|88|9b|1a|1c|66|11|
+87|1a|a8|7e|00|

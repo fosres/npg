@@ -288,22 +288,41 @@ main(int argc,char**argv)
 	
 	printf("Printing public key-encryption-subkey authenticated password whose length is %llu:\n",crypto_box_MACBYTES+MAXSIZE+1);
 	
-	unsigned char * open_cpk_pwd = (unsigned char*)calloc(MAXSIZE+1+crypto_box_MACBYTES,sizeof(unsigned char));
+	unsigned char * open_cpk_pwd = (unsigned char*)calloc(MAXSIZE+1,sizeof(unsigned char));
 	
 	npg_open_pwd(open_cpk_pwd,cpk_pwd,MAXSIZE+1+crypto_box_MACBYTES,nonce,publickey,signature_subkey);
 
-	if (strncmp(pwd,open_cpk_pwd,MAXSIZE+1+crypto_box_MACBYTES) != 0)	{
+	printf("Printing pwd:\n");
 
-		printf("Error:Decrypted password and original password are not the same!\n");
+	i = 0;
+
+	while ( i < (MAXSIZE+1) )	{
+		if (i%32==0){putchar(0xa);}
 		
-		exit(1);
-	}
-
-	else			{
-
-		printf("Good news,password and open_cpk_pwd match perfectly\n");
+		printf("%.2x|",pwd[i]);
+	
+		i++;
 
 	}
+	
+	i = 0;
+
+	putchar(0xa);
+	
+	printf("Printing open_cpk_pwd:\n");
+
+	
+	while ( i < (MAXSIZE+1) )	{
+		if (i%32==0){putchar(0xa);}
+		
+		printf("%.2x|",open_cpk_pwd[i]);
+	
+		i++;
+
+	}
+
+	putchar(0xa);
+	
 #if 0	
 	while ( i < (crypto_box_MACBYTES + MAXSIZE + 1) )	{
 		
