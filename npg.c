@@ -6,7 +6,7 @@
 
 #define CONTEXT	"TESTING"
 
-#define MAXSIZE	4096	
+#define MAXSIZE	100	
 static int
 npg_encrypt(const char *target_file, const char *source_file,
         const unsigned char key[crypto_secretstream_xchacha20poly1305_KEYBYTES])
@@ -90,7 +90,17 @@ void npg_genkeys(unsigned char * pk,unsigned char *sk)	{
 
 }
 
+void npg_format_pwd(unsigned char*c,const unsigned char * m,const unsigned long long int mlen,const unsigned char * n,const unsigned char*pk,const unsigned char*sk)	{
 
+	if ( crypto_box_easy(c,m,mlen,n,pk,sk) == -1)	{
+		
+		fprintf(stderr,"Error:Failed to encrypt randomized key with public key\n");
+
+		exit(1);
+
+	}
+
+}
 
 int
 main(int argc,char**argv)
@@ -104,7 +114,6 @@ main(int argc,char**argv)
 	unsigned char dest[2048];
 
 	memcpy(dest,argv[1],strnlen(argv[1],2048));	
-
 	strncat(dest,".npg\0",strnlen(dest,2048));
 	
 	unsigned char publickey[64]; 
@@ -208,6 +217,32 @@ main(int argc,char**argv)
 		fprintf(stderr,"Error:Failed to decrypt file\n");
 		exit(1);
 	}
+	
+	unsigned char cpk_pwd[crypto_box_MACBYTES + MAXSIZE+1];
+	
+	unsigned char nonce[crypto_box_NONCEBYTES];
+
+	memset(cpk_pwd,0x0,crypto_box_MACBYTES+MAXSIZE+1);
+
+	memset(nonce,0x0,crypto_box_NONCEBYTES);
+
+	npg_format_pwd(cpk_pwd,pwd,MAXSIZE+1,nonce,publickey,encryption_subkey);
+
+	i = 0;
+	
+	printf("Printing public key-encryption-subkey authenticated password whose length is %llu:\n",crypto_box_MACBYTES+MAXSIZE+1);
+	
+	while ( i < (crypto_box_MACBYTES + MAXSIZE + 1) )	{
+		
+		if(i%32==0){putchar(0xa);}
+	
+		printf("%.2x|",cpk_pwd[i]);
+
+		i++;
+
+	}
+	
+	i = 0;
 	
 	return 0;
 }
