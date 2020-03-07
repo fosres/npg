@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <sodium.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #define CHUNK_SIZE 4096
 
@@ -99,6 +101,60 @@ void npg_format_pwd(unsigned char*c,const unsigned char * m,const unsigned long 
 		exit(1);
 
 	}
+
+}
+
+void npg_open_pwd(unsigned char*m,const unsigned char *c,unsigned long long clen,const unsigned char *n,const unsigned char * pk,const unsigned char *sk)	{
+
+	if ( crypto_box_open_easy(m,c,clen,n,pk,sk) == -1 )	{
+		fprintf(stderr,"Error:Failed to decrypt npg_password\n");
+
+		exit(1);
+
+	}	
+
+
+}
+
+unsigned char * file_to_arr(unsigned char*filename,unsigned long long int * file_len)	{
+	
+	FILE * in = 0;
+
+	if ( (in = fopen(filename,"rb")) == NULL )	{
+		fprintf(stderr,"Error:Failed to read file\n");
+		fclose(in);
+
+		exit(1);
+
+	}
+
+	fseek(in,0L,SEEK_END);
+
+	*file_len = ftell(in);
+
+	rewind(in);	
+
+	unsigned char * dest = (unsigned char *)calloc(*file_len,sizeof(unsigned char));
+
+	if ( fread(dest,1,*file_len,in) != (*file_len) )	{
+		fprintf(stderr,"Error:Failed to copy file into array\n");
+		
+		fclose(in);
+
+		free(dest);
+
+		exit(1);
+
+	}
+	
+	fclose(in);
+
+	return dest;
+}
+
+unsigned char sign_message(unsigned char *sm,unsigned long long *smlen_p,const unsigned char * m,unsigned long long mlen,const unsigned char *sk)	{
+	
+	crypto_sign(sm,smlen_p,m,mlen,sk);
 
 }
 
@@ -226,12 +282,16 @@ main(int argc,char**argv)
 
 	memset(nonce,0x0,crypto_box_NONCEBYTES);
 
-	npg_format_pwd(cpk_pwd,pwd,MAXSIZE+1,nonce,publickey,encryption_subkey);
+	npg_format_pwd(cpk_pwd,pwd,MAXSIZE+1,nonce,publickey,signature_subkey);
 
 	i = 0;
 	
-	printf("Printing public key-encryption-subkey athenticated password whose length is %llu:\n",crypto_box_MACBYTES+MAXSIZE+1);
+	printf("Printing public key-encryption-subkey authenticated password whose length is %llu:\n",crypto_box_MACBYTES+MAXSIZE+1);
 	
+	unsigned char * open_cpk_pwd = (unsigned char*)calloc(MAXSIZE+1+crypto_box_MACBYTES,sizeof(unsigned char));
+	
+	npg_open_pwd(open_cpk_pwd,cpk_pwd,MAXSIZE+1+crypto_box_MACBYTES,nonce,publickey,signature_subkey);
+#if 0	
 	while ( i < (crypto_box_MACBYTES + MAXSIZE + 1) )	{
 		
 		if(i%32==0){putchar(0xa);}
@@ -244,5 +304,20 @@ main(int argc,char**argv)
 	
 	i = 0;
 	
+	unsigned char file_arr_len = 0;	
+	
+	unsigned char * file_arr = file_to_arr(argv[1],&file_arr_len);
+
+	unsigned long long int file_arr_signed_len = file_arr_len + crypto_sign_BYTES;	
+		
+	unsigned char * file_arr_signed = (unsigned char*)calloc(file_arr_len + crypto_sign_BYTES,sizeof(unsigned char));
+
+	sign_message(file_arr_signed,&file_arr_signed_len,file_arr,file_arr_len,signature_subkey);	
+	
+	free(file_arr);	
+	
+	free(file_arr_signed);			
+
+#endif
 	return 0;
 }
