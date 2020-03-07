@@ -76,6 +76,17 @@ ret:
     return ret;
 }
 
+void npg_genkeys(unsigned char * pk,unsigned char *sk)	{
+	
+	if (crypto_box_keypair(pk,sk) == -1)	{
+		
+		fprintf(stderr,"Error:Public-private key verification failed\n");
+
+		return;
+	}
+
+}
+
 int
 main(int argc,char**argv)
 {
@@ -84,6 +95,7 @@ main(int argc,char**argv)
     if (sodium_init() != 0) {
         return 1;
     }
+
     crypto_secretstream_xchacha20poly1305_keygen(key);
 
 	unsigned char dest[2048];
@@ -99,5 +111,37 @@ main(int argc,char**argv)
     if (npg_decrypt("restore", dest, key) != 0) {
         return 1;
     }
-    return 0;
+	
+	unsigned char publickey[64]; 
+
+	memset(publickey,0x0,64);
+
+	unsigned char secretkey[64];
+	
+	memset(secretkey,0x0,64);
+
+	npg_genkeys(publickey,secretkey);
+
+	size_t i = 0;
+
+	while ( i < 32 )	{
+		
+		printf("%.2x|",publickey[i]);
+		
+		i++;
+	}
+
+	putchar(0xa);
+
+	i = 0;
+	
+	while ( i < 32 )	{
+		
+		printf("%.2x|",secretkey[i]);
+		
+		i++;
+	}
+
+   	putchar(0xa); 
+	return 0;
 }
