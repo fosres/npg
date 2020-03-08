@@ -217,7 +217,7 @@ int verify_signed_message(unsigned char *sm,unsigned long long *smlen_p,const un
 }
 #endif
 
-void gen_email_message(unsigned char * pubkey_encrypted_sym_key,unsigned long long int pesk_len,unsigned char* encrypted_email,unsigned long long int mlen,unsigned char*filename)	{
+size_t gen_email_message(unsigned char * pubkey_encrypted_sym_key,unsigned long long int pesk_len,unsigned char* encrypted_email,unsigned long long int mlen,unsigned char*filename)	{
 		
 		size_t i = 0;
 
@@ -348,8 +348,9 @@ void gen_email_message(unsigned char * pubkey_encrypted_sym_key,unsigned long lo
 	//	free(binout);
 
 		free(base64_binout);		
-}
 
+		return base64_binout_len;
+}
 
 
 int
