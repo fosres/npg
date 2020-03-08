@@ -176,6 +176,23 @@ void sign_message_detached(unsigned char *sig,unsigned long long *siglen_p,const
 
 }
 
+void sign_message(unsigned char *sm,unsigned long long *smlen_p,const unsigned char *m,unsigned long long mlen,const unsigned char *sk)	{
+	
+	crypto_sign(sm,smlen_p,m,mlen,sk);
+
+}
+
+void verify_signed_message(unsigned char*m,unsigned long long *mlen_p,const unsigned char *sm,unsigned long long smlen,const unsigned char *pk)	{
+	
+	if (crypto_sign_open(m,mlen_p,sm,smlen,pk) == -1)	{
+
+		fprintf(stderr,"Error:Failed to verify signed message\n");
+
+		exit(1);
+	}	
+
+}
+
 int verify_detached_signed_message(unsigned char*sig,const unsigned char *m,unsigned long long mlen,unsigned char *pk)	{
 
 	if ( crypto_sign_verify_detached(sig,m,mlen,pk) != 0 )	{
@@ -373,9 +390,7 @@ main(int argc,char**argv)
 	
 	unsigned char * file_arr = file_to_arr(dest,&file_arr_len);
 
-	printf("file_arr_len:%llu\n",file_arr_len);
-
-	unsigned long long int file_arr_signed_len = 0;	
+	unsigned long long int file_arr_signed_len = crypto_sign_BYTES + file_arr_len;	
 		
 	unsigned char * file_arr_signed = (unsigned char*)calloc(file_arr_signed_len,sizeof(unsigned char));
 
@@ -400,28 +415,20 @@ main(int argc,char**argv)
 	
 	crypto_sign_keypair(sign_publickey,sign_secretkey);
 
-	sign_message_detached(file_sig,NULL,file_arr,file_arr_len,sign_secretkey);
 #if 0
-	if (crypto_sign_detached(file_sig,NULL,file_arr,file_arr_len,sign_secretkey) == -1 )	{
-		
-		fprintf(stderr,"Error:crypto_sign_detached returned -1\n");
-
-		exit(1);
-
-	}	
+	sign_message_detached(file_sig,NULL,file_arr,file_arr_len,sign_secretkey);
 #endif
+	sign_message(file_arr_signed,&file_arr_signed_len,file_arr,file_arr_len,sign_secretkey);
+	
+	verify_signed_message(file_arr_recipient,&file_arr_recipient_len,file_arr_signed,file_arr_signed_len,sign_publickey);	
+
+	free(file_arr);	
+
 	i = 0;
 
-	printf("File signature size is:%llu\n",file_arr_signed_len);
+	printf("Signed file size is:%llu\n",file_arr_signed_len);
 	
-	printf("Printing file signature\n");
-	
-	while ( i < file_arr_signed_len )	{
-		
-		printf("%.2x|",file_sig[i]);
-
-		i++;
-	}
+	free(file_arr_signed);			
 	
 	putchar(0xa);
 	
@@ -429,24 +436,12 @@ main(int argc,char**argv)
 
 	printf("Verifying crypto_signature\n");
 	
-	verify_detached_signed_message(file_sig,file_arr,file_arr_len,sign_publickey);
+	//verify_detached_signed_message(file_sig,file_arr,file_arr_len,sign_publickey);
 	
 	i = 0;
 	
 	printf("file_arr_recipient_len:%llu\n",file_arr_recipient_len);
 	
-	printf("Printing file_arr_recipient_byte contents:\n");
-
-	while ( i < file_arr_recipient_len )	{
-		
-		printf("%.2x|",file_arr_recipient[i]);
-
-		i++;
-	}
-	
-	free(file_arr);	
-	
-	free(file_arr_signed);			
 	
 	free(file_arr_recipient);
 	
@@ -468,12 +463,29 @@ main(int argc,char**argv)
 
 	}
 	
+	size_t base64in_len = 0;
+
+	unsigned char * base64in = base64_decode(base64out,len,&base64in_len);
+
+	i = 0;
+	
+	putchar(0xa);
+	
+	while ( i < base64in_len )	{
+		
+		printf("%c",base64in[i]);
+
+		i++;
+	}
+	
 	putchar(0xa);
 	
 	base64_cleanup();	
 
 	free(base64out);
-	
+
+	free(base64in);
+		
 	return 0;
 
 }
