@@ -1,4 +1,4 @@
-##Youtube Link
+## Youtube Link
 https://www.youtube.com/watch?v=9CnKlbXzxTs&feature=youtu.be
 ## Inspiration
 The inspiration was GNUPG. GNUPG is an implementation of Pretty Good Privacy, a software encryption suite designed for secure communication. But there were two problems with GNUPG: GNUPG's ciphers did not defend against timing-side channel attacks and they were slower. Moreover, the ciphers that were part of the libsodium programming library did. It is my intention to advance NPG to securely communicate with people through email. The basic idea is that whoever sends us email must be properly encrypted and digitally signed by the proper keys. Otherwise, the server will instantaneously destroy the email. Moreover, it is my intention to upgrade a previous hackathon project, prm (https://github.com/fosres/prm), with NPG so files are even better protected against security compromises. By securely encrypting each and every file in a directory with a randomized password as described below, crackers will have an even more difficult time finding the information they need. 
