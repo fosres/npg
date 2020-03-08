@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <sodium.h>
+//#include <sodium.h>
 #include "npg.h"
 
 void base2_to_base64_init(void)	{
@@ -125,7 +125,7 @@ void base2_to_base64(unsigned char *bp,unsigned long long int len)	{
 
 		base64char >>= 2;
 
-		printf("%c",base64[base64char]);
+		printf("%c",base64[base64char] & 0x00ff);
 
 
 		last_six_bits = base64[base64char];
@@ -164,13 +164,13 @@ void base2_to_base64(unsigned char *bp,unsigned long long int len)	{
 
 		carry_byte |= (base64char & 0b11000000) >> 6;	
 
-		printf("%c",base64[carry_byte]);
+		printf("%c",base64[carry_byte] & 0x00ff);
 
 		carry_byte = 0;
 
 		base64char &= 0b00111111;
 
-		printf("%c",base64[base64char]);last_six_bits = base64[base64char];
+		printf("%c",base64[base64char]&0x00ff);last_six_bits = base64[base64char];
 
 		if ( i >= len )	{
 			
@@ -185,11 +185,8 @@ void base2_to_base64(unsigned char *bp,unsigned long long int len)	{
 		
 	}
 
-	if (!feof(in))	{
-		
-		fprintf(stderr,"Error:Failed to read file\n");
-		
-		exit(1);
+	if (i >= len)	{
+		return;	
 	}
 
 	if ((last_six_bits & 0x0f) == 0x0)	{
@@ -202,5 +199,20 @@ void base2_to_base64(unsigned char *bp,unsigned long long int len)	{
 		printf("%c",'=');
 	}
 
+}
+
+int main(int argc,char**argv)	{
+	
+	base2_to_base64_init();
+		
+	unsigned char arr[3];
+	
+	size_t i = 0;
+
+	while ( i < 64 )	{
+		printf("%c",base64[i] & 0x00ff);
+		i++;
+	}
+	return 0;
 }
 
