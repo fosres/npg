@@ -79,8 +79,12 @@ unsigned char * decrypt_email_message(unsigned char*radix64,size_t radix64_len,u
 		i++;
 
 		n++;
-	}		
+	}
+
+	free(radix64_decoded);		
 	
+	free(pubkey_encrypted_symm_key);
+
 	unsigned long long int mlen = smlen-crypto_sign_BYTES;	
 	
 	unsigned char * m = (unsigned char*)calloc(mlen,sizeof(unsigned char));
@@ -88,6 +92,10 @@ unsigned char * decrypt_email_message(unsigned char*radix64,size_t radix64_len,u
 	verify_signed_message(m,&mlen,sm,smlen,sign_publickey);
 
 	//The following is to decrypt the password
+
+	free(m);
+
+	free(sm);
 
 	unsigned char decrypted_password[length_of_public_private_symm_key-crypto_box_MACBYTES];
 
