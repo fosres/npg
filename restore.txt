@@ -217,6 +217,120 @@ int verify_signed_message(unsigned char *sm,unsigned long long *smlen_p,const un
 }
 #endif
 
+void gen_email_message(unsigned char * pubkey_encrypted_sym_key,unsigned long long int pesk_len,unsigned char* encrypted_email,unsigned long long int mlen,unsigned char*filename)	{
+		
+		size_t i = 0;
+
+		unsigned char * binout = (unsigned char*)calloc(pesk_len+mlen,sizeof(unsigned char));
+
+		unsigned char * binout_p = binout;
+		
+		unsigned char filename_output[2048];
+
+		memset(filename_output,0x0,2048);
+
+		strncat(filename_output,filename,2048);
+
+		strncat(filename_output,".msg\0",9);			
+
+#if 0	
+		//One octet giving version number of packet type
+		
+		*binout_p++ = 3;	
+
+		//Eight-octet number that gives key ID of public key to which session
+
+		//key is encrypted.
+		
+		i = 0;
+
+		while ( i < 7 )	{
+			
+			*bin_out+p++ = 0;
+
+			i++;
+		}
+		
+		*binout_p++ = 1;
+
+		//One-octet public-key algorithm:crypto_box_easy()
+
+		*binout_p++ = 100;
+#endif		
+		//Eight octets representing length of forthcoming string for public-key protected symmetric key
+		
+		i = 0;
+
+		unsigned long long int temp_len = pesk_len;
+
+		while ( i < 8 )	{
+			
+			*binout_p++ = (temp_len & 0xff00000000000000) >> 56;		
+
+			temp_len <<= 8;
+
+			i++;
+		}		
+		
+		//String of octets that is the encrypted session key.
+
+		i = 0;
+
+		while ( i < pesk_len )	{
+			
+			*binout_p++ = pubkey_encrypted_sym_key[i];
+
+			i++;
+		}		
+		
+		//The following now accounts for the MAC-authenticated encrypted email message body			
+
+		//Eight octets representing forthcoming string of encrypted email message	
+		
+		temp_len = mlen;
+		
+		while ( i < 8 )	{
+			
+			*binout_p++ = (temp_len & 0xff00000000000000) >> 56;		
+
+			temp_len <<= 8;
+
+			i++;
+		}
+
+		//String of octets representing string of encrypted email message
+
+		i = 0;
+
+		while ( i < mlen )	{
+			
+			*binout_p++ = encrypted_email[i];
+
+			i++;
+		}		
+		
+		FILE * in = 0;
+
+		if ( (in = fopen(filename_output,"wb")) == NULL )	{
+
+			fprintf(stderr,"Error:Failed to create file\n");
+
+			exit(1);
+		}
+ 		
+		i = 0;
+
+		while ( i < ( pesk_len + mlen ) )	{
+			
+			fprintf(in,"%c",binout[i]);		
+
+			i++;
+
+		}		
+		
+		free(binout);	
+}
+
 int
 main(int argc,char**argv)
 {
@@ -420,15 +534,13 @@ main(int argc,char**argv)
 #endif
 	sign_message(file_arr_signed,&file_arr_signed_len,file_arr,file_arr_len,sign_secretkey);
 	
-	verify_signed_message(file_arr_recipient,&file_arr_recipient_len,file_arr_signed,file_arr_signed_len,sign_publickey);	
+	printf("Verifying crypto_signature\n");
 
-	free(file_arr);	
+	verify_signed_message(file_arr_recipient,&file_arr_recipient_len,file_arr_signed,file_arr_signed_len,sign_publickey);	
 
 	i = 0;
 
 	printf("Signed file size is:%llu\n",file_arr_signed_len);
-	
-	free(file_arr_signed);			
 	
 	putchar(0xa);
 	
@@ -441,9 +553,6 @@ main(int argc,char**argv)
 	i = 0;
 	
 	printf("file_arr_recipient_len:%llu\n",file_arr_recipient_len);
-	
-	
-	free(file_arr_recipient);
 	
 	build_decoding_table();	
 	
@@ -463,6 +572,8 @@ main(int argc,char**argv)
 
 	}
 	
+	putchar(0xa);
+	
 	size_t base64in_len = 0;
 
 	unsigned char * base64in = base64_decode(base64out,len,&base64in_len);
@@ -480,11 +591,46 @@ main(int argc,char**argv)
 	
 	putchar(0xa);
 	
+	size_t base64_open_cpk_pwdlen = 0;
+
+	unsigned char * base64_open_cpk_pwd = base64_encode(open_cpk_pwd,MAXSIZE+1,&base64_open_cpk_pwdlen);
+
+	i = 0;
+
+	while ( i < base64_open_cpk_pwdlen )	{
+		
+		printf("%c",base64_open_cpk_pwd[i]);
+
+		i++;
+	}
+	
+	putchar(0xa);
+
+	size_t base64_open_cpk_pwd_decode_len = 0;
+
+	unsigned char * base64_open_cpk_pwd_decode = base64_decode(base64_open_cpk_pwd,base64_open_cpk_pwdlen,&base64_open_cpk_pwd_decode_len);
+	
+	gen_email_message(cpk_pwd,crypto_box_MACBYTES + MAXSIZE+1,file_arr_signed,file_arr_signed_len,dest);
+	
+	putchar(0xa);
+	
 	base64_cleanup();	
 
 	free(base64out);
 
 	free(base64in);
+
+	free(open_cpk_pwd);
+
+	free(base64_open_cpk_pwd);
+
+	free(base64_open_cpk_pwd_decode);
+
+	free(file_arr);
+
+	free(file_arr_signed);
+
+	free(file_arr_recipient);
 		
 	return 0;
 
