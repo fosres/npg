@@ -319,17 +319,38 @@ void gen_email_message(unsigned char * pubkey_encrypted_sym_key,unsigned long lo
 		}
  		
 		i = 0;
-
+		
 		while ( i < ( pesk_len + mlen ) )	{
 			
-			fprintf(in,"%c",binout[i]);		
+	//		fprintf(in,"%c",binout[i]);		
 
 			i++;
 
 		}		
 		
-		free(binout);	
+		size_t base64_binout_len = 0;
+
+		unsigned char * base64_binout = base64_encode(binout,pesk_len + mlen,&base64_binout_len);			
+		free(binout);
+
+		printf("Size of base64_binout:%llu\n",base64_binout_len);
+		
+		i = 0;
+		
+		while ( i < ( base64_binout_len ) )	{
+			
+			fprintf(in,"%c",base64_binout[i]);		
+
+			i++;
+
+		}		
+
+	//	free(binout);
+
+		free(base64_binout);		
 }
+
+
 
 int
 main(int argc,char**argv)
@@ -610,10 +631,18 @@ main(int argc,char**argv)
 
 	unsigned char * base64_open_cpk_pwd_decode = base64_decode(base64_open_cpk_pwd,base64_open_cpk_pwdlen,&base64_open_cpk_pwd_decode_len);
 	
+	free(file_arr);
+
 	gen_email_message(cpk_pwd,crypto_box_MACBYTES + MAXSIZE+1,file_arr_signed,file_arr_signed_len,dest);
 	
-	putchar(0xa);
+	free(file_arr_signed);
 	
+	free(file_arr_recipient);
+
+	free(base64_open_cpk_pwd);
+
+	free(base64_open_cpk_pwd_decode);
+
 	base64_cleanup();	
 
 	free(base64out);
@@ -621,17 +650,7 @@ main(int argc,char**argv)
 	free(base64in);
 
 	free(open_cpk_pwd);
-
-	free(base64_open_cpk_pwd);
-
-	free(base64_open_cpk_pwd_decode);
-
-	free(file_arr);
-
-	free(file_arr_signed);
-
-	free(file_arr_recipient);
-		
+	
 	return 0;
 
 }
