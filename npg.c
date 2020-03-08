@@ -172,19 +172,19 @@ void sign_message(unsigned char *sig,unsigned long long *siglen_p,const unsigned
 
 }
 
-int verify_signed_message(unsigned char*m,unsigned long long int *mlen_p,const unsigned char *sm,unsigned long long int smlen,const unsigned char*pk)	{
+int verify_detached_signed_message(unsigned char*sig,const unsigned char *m,unsigned long long mlen,unsigned char *pk)	{
 
-	if (crypto_sign_open(m,mlen_p,sm,smlen,pk)==-1)		{
-		fprintf(stderr,"Error:Failed to verify signed message. WARNING: There is a chance someone is trying to do something NASTY!!!\n");
-
-		exit(1);	
+	if ( crypto_sign_verify_detached(sig,m,mlen,pk) != 0 )	{
+		
+		fprintf(stderr,"Error:Signed message verification failed!\n");
 
 	}
 
 	else							{
+		printf("Congrats! Verification of message succeeded\n");
 
-		printf("Congrats, message verified\n");
 	}
+
 
 }
 
@@ -418,7 +418,9 @@ main(int argc,char**argv)
 	printf("file_arr_len is %llu\n",file_arr_len);
 
 	printf("Verifying crypto_signature\n");
-
+	
+	verify_detached_signed_message(file_sig,file_arr,file_arr_len,sign_publickey);
+#if 0
 	if ( crypto_sign_verify_detached(file_sig,file_arr,file_arr_len,sign_publickey) != 0 )	{
 		
 		fprintf(stderr,"Error:Signed message verification failed!\n");
@@ -429,7 +431,7 @@ main(int argc,char**argv)
 		printf("Congrats: Verification of signature worked\n");
 
 	}
-	
+#endif	
 	i = 0;
 	
 	printf("file_arr_recipient_len:%llu\n",file_arr_recipient_len);
