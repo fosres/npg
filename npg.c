@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include <sodium.h>
+#include <stddef.h>
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-
+#include "npg.h"
 #define CHUNK_SIZE 4096
 
 #define CONTEXT	"TESTING"
@@ -448,6 +449,31 @@ main(int argc,char**argv)
 	free(file_arr_signed);			
 	
 	free(file_arr_recipient);
+	
+	build_decoding_table();	
+	
+	unsigned char arr[3] = {'M','a','n'};	
+	
+	size_t len = 0;
+	
+	unsigned char * base64out = base64_encode(arr,3,&len);
+	
+	i = 0;
 
+	while ( i < len )	{	
+		
+		printf("%c",base64out[i]);
+
+		i++;
+
+	}
+	
+	putchar(0xa);
+	
+	base64_cleanup();	
+
+	free(base64out);
+	
 	return 0;
+
 }

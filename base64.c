@@ -96,6 +96,7 @@ void build_decoding_table() {
 void base64_cleanup() {
     free(decoding_table);
 }
+
 #if 0
 int main(int argc,char**argv)	{
 	
@@ -112,6 +113,7 @@ int main(int argc,char**argv)	{
 	base64_cleanup();	
 
 	free(out);
+	
 	return 0;
 }
 #endif
