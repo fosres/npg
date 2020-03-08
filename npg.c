@@ -85,7 +85,7 @@ void npg_genkeys(unsigned char * pk,unsigned char *sk)	{
 	
 	if (crypto_box_keypair(pk,sk) == -1)	{
 		
-		fprintf(stderr,"Error:Public-private key verification failed\n");
+		fprintf(stderr,"Error:Public-private key generation failed\n");
 
 		return;
 	}
@@ -104,6 +104,17 @@ void npg_format_pwd(unsigned char*c,const unsigned char * m,const unsigned long 
 
 }
 
+void mac_message(unsigned char*c,const unsigned char * m,const unsigned long long int mlen,const unsigned char * n,const unsigned char*pk,const unsigned char*sk)	{
+
+	if ( crypto_box_easy(c,m,mlen,n,pk,sk) == -1)	{
+		
+		fprintf(stderr,"Error:Failed to encrypt randomized key with public key\n");
+
+		exit(1);
+
+	}
+
+}
 void npg_open_pwd(unsigned char*m,const unsigned char *c,unsigned long long clen,const unsigned char *n,const unsigned char * pk,const unsigned char *sk)	{
 
 	if ( crypto_box_open_easy(m,c,clen,n,pk,sk) == -1 )	{
@@ -152,9 +163,28 @@ unsigned char * file_to_arr(unsigned char*filename,unsigned long long int * file
 	return dest;
 }
 
-unsigned char sign_message(unsigned char *sm,unsigned long long *smlen_p,const unsigned char * m,unsigned long long mlen,const unsigned char *sk)	{
+void sign_message(unsigned char *sig,unsigned long long *siglen_p,const unsigned char * m,unsigned long long mlen,const unsigned char *sk)	{
 	
-	crypto_sign(sm,smlen_p,m,mlen,sk);
+	if (crypto_sign_detached(sig,siglen_p,m,mlen,sk)==-1)
+	{
+		fprintf(stderr,"Error:sign_message returned -1. Digital Signature may have failed\n");
+	}
+
+}
+
+int verify_signed_message(unsigned char*m,unsigned long long int *mlen_p,const unsigned char *sm,unsigned long long int smlen,const unsigned char*pk)	{
+
+	if (crypto_sign_open(m,mlen_p,sm,smlen,pk)==-1)		{
+		fprintf(stderr,"Error:Failed to verify signed message. WARNING: There is a chance someone is trying to do something NASTY!!!\n");
+
+		exit(1);	
+
+	}
+
+	else							{
+
+		printf("Congrats, message verified\n");
+	}
 
 }
 
@@ -172,13 +202,14 @@ main(int argc,char**argv)
 	memcpy(dest,argv[1],strnlen(argv[1],2048));	
 	strncat(dest,".npg\0",strnlen(dest,2048));
 	
-	unsigned char publickey[64]; 
+	unsigned char publickey[crypto_box_PUBLICKEYBYTES]; 
 
-	memset(publickey,0x0,64);
+	memset(publickey,0x0,crypto_box_PUBLICKEYBYTES);
 
-	unsigned char secretkey[64];
+	unsigned char secretkey[crypto_box_SECRETKEYBYTES];
 	
-	memset(secretkey,0x0,64);
+	memset(secretkey,0x0,crypto_box_SECRETKEYBYTES);
+	
 
 	npg_genkeys(publickey,secretkey);
 
@@ -323,33 +354,100 @@ main(int argc,char**argv)
 
 	putchar(0xa);
 	
-#if 0	
-	while ( i < (crypto_box_MACBYTES + MAXSIZE + 1) )	{
-		
-		if(i%32==0){putchar(0xa);}
 	
-		printf("%.2x|",cpk_pwd[i]);
+	i = 0;
+	
+	unsigned long long int file_arr_len = 0;	
+	
+	unsigned char * file_arr = file_to_arr(argv[1],&file_arr_len);
+
+	printf("file_arr_len:%llu\n",file_arr_len);
+
+	unsigned long long int file_arr_signed_len = 0;	
+		
+	unsigned char * file_arr_signed = (unsigned char*)calloc(file_arr_signed_len,sizeof(unsigned char));
+
+	unsigned char file_sig[crypto_sign_BYTES];
+
+	memset(file_sig,0x0,crypto_sign_BYTES*sizeof(unsigned char));
+
+	unsigned char * file_arr_recipient = (unsigned char*)calloc(file_arr_signed_len,sizeof(unsigned char));
+
+	unsigned long long int file_arr_recipient_len = 0;
+
+
+//	sign_message(file_sig,&file_arr_signed_len,file_arr,file_arr_len,secretkey);	
+	
+	unsigned char sign_input[5] = "This\0";	
+	
+	unsigned char sign_publickey[crypto_sign_PUBLICKEYBYTES];
+
+	unsigned char sign_secretkey[crypto_sign_SECRETKEYBYTES];
+	
+	memset(sign_publickey,0x0,crypto_sign_PUBLICKEYBYTES*sizeof(unsigned char));
+
+	memset(sign_secretkey,0x0,crypto_sign_SECRETKEYBYTES*sizeof(unsigned char));
+	
+	crypto_sign_keypair(sign_publickey,sign_secretkey);
+
+	if (crypto_sign_detached(file_sig,NULL,file_arr,file_arr_len,sign_secretkey) == -1 )	{
+		
+		fprintf(stderr,"Error:crypto_sign_detached returned -1\n");
+
+		exit(1);
+
+	}	
+
+	i = 0;
+
+	printf("File signature size is:%llu\n",file_arr_signed_len);
+	
+	printf("Printing file signature\n");
+	
+	while ( i < file_arr_signed_len )	{
+		
+		printf("%.2x|",file_sig[i]);
 
 		i++;
+	}
+	
+	putchar(0xa);
+#if 0
+	verify_signed_message(file_arr_recipient,&file_arr_recipient_len,file_arr_signed,file_arr_signed_len,publickey);	
+#endif
+	printf("file_arr_len is %llu\n",file_arr_len);
+
+	printf("Verifying crypto_signature\n");
+
+	if ( crypto_sign_verify_detached(file_sig,file_arr,file_arr_len,sign_publickey) != 0 )	{
+		
+		fprintf(stderr,"Error:Signed message verification failed!\n");
+
+	}
+
+	else											{
+		printf("Congrats: Verification of signature worked\n");
 
 	}
 	
 	i = 0;
 	
-	unsigned char file_arr_len = 0;	
+	printf("file_arr_recipient_len:%llu\n",file_arr_recipient_len);
 	
-	unsigned char * file_arr = file_to_arr(argv[1],&file_arr_len);
+	printf("Printing file_arr_recipient_byte contents:\n");
 
-	unsigned long long int file_arr_signed_len = file_arr_len + crypto_sign_BYTES;	
+	while ( i < file_arr_recipient_len )	{
 		
-	unsigned char * file_arr_signed = (unsigned char*)calloc(file_arr_len + crypto_sign_BYTES,sizeof(unsigned char));
+		printf("%.2x|",file_arr_recipient[i]);
 
-	sign_message(file_arr_signed,&file_arr_signed_len,file_arr,file_arr_len,signature_subkey);	
+		i++;
+	}
 	
 	free(file_arr);	
 	
 	free(file_arr_signed);			
+	
+	free(file_arr_recipient);
 
-#endif
 	return 0;
 }

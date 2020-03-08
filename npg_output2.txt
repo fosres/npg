@@ -1,29 +1,39 @@
+Error:Signed message verification failed!
 Printing Encryption Subkey:
 
 
-f9|52|28|f4|ac|28|e4|de|bb|38|84|ab|5e|1e|d2|71|4a|b2|81|84|f2|08|48|32|28|67|be|33|a1|23|5a|ec|
+9c|82|10|5a|fa|24|fb|5b|04|c5|92|1a|6e|39|44|51|8f|d6|cc|ce|cd|f9|46|4f|a2|da|d1|0c|af|94|34|41|
 
-2c|a8|e9|bf|4f|8c|e1|db|a6|0a|5f|59|2b|54|4d|27|3d|38|c5|a2|45|58|88|8b|4b|35|45|ae|4a|13|d7|d5|
+2d|9e|13|f1|71|d7|c1|6b|81|0f|c8|3a|f4|fb|44|33|bb|d1|59|36|79|86|59|7f|ce|13|66|5a|fa|c8|7c|7d|
 
 Printing Signature Subkey:
 
 
-2f|47|ad|cc|bb|ac|e4|a0|c1|ef|b0|b6|69|62|02|32|86|66|a3|b9|5a|07|eb|7a|3a|3c|ef|92|d3|33|4b|39|
+09|50|94|64|59|9a|22|e7|3b|5b|93|bb|0a|cb|49|2e|a0|13|7a|15|8d|e3|02|fe|09|82|01|bf|04|a3|ae|a9|
 
-e2|8e|3b|c7|0d|a5|04|f4|2e|f4|02|e2|4f|6a|e6|7c|c4|34|d5|26|17|19|e4|d7|69|8a|6c|5c|78|64|af|b5|
+ea|4f|93|92|0b|31|c6|4b|71|bb|a6|4d|48|d4|06|a2|ef|c7|bb|3f|61|be|9b|55|6f|ba|ba|d2|67|b9|10|ee|
 Printing argon2id hash of password that has length:128
-af|ef|b3|f8|40|61|12|f2|44|cd|18|88|9c|3d|75|d7|f5|31|7b|97|3a|c6|e9|20|a0|b8|ea|ed|3b|13|7f|1b|
+40|21|b7|28|e8|42|c0|f2|e1|be|43|37|96|99|4d|6e|78|4e|fc|8e|7f|95|b1|93|5d|ce|90|8f|29|76|c2|76|
 Length of keybytes:32
 Printing public key-encryption-subkey authenticated password whose length is 117:
 Printing pwd:
 
-74|f7|32|ab|f6|3d|26|df|12|5c|0e|74|a6|28|a1|92|da|4d|ac|1f|6d|32|57|9a|3d|9c|27|c9|ce|ba|66|7f|
-49|8d|59|0d|a8|d9|1f|45|6e|fc|ee|d1|f8|fc|76|83|bb|3c|97|d4|1a|87|30|37|bd|6d|38|c2|34|1c|f4|d3|
-c0|c7|47|23|53|1c|66|a1|28|c8|c4|26|2f|cf|f8|31|81|0f|ba|70|91|66|d9|b5|85|ac|88|9b|1a|1c|66|11|
-87|1a|a8|7e|00|
+55|5d|65|fa|56|c4|7e|12|0c|ac|8e|1c|79|4c|ad|26|2e|64|56|3b|8f|2c|19|5d|d2|cb|16|04|78|c8|de|f2|
+81|82|80|ef|69|c4|43|7c|d2|37|01|9d|ae|aa|46|78|06|e4|07|0a|a5|86|02|87|64|a4|81|c2|c8|36|a2|f8|
+26|10|56|c2|a3|f4|17|6d|92|61|91|8e|6a|a5|af|c5|3a|6b|33|0e|4d|4e|78|0f|47|e1|ab|cd|1c|32|66|71|
+7a|67|5f|16|00|
 Printing open_cpk_pwd:
 
-74|f7|32|ab|f6|3d|26|df|12|5c|0e|74|a6|28|a1|92|da|4d|ac|1f|6d|32|57|9a|3d|9c|27|c9|ce|ba|66|7f|
-49|8d|59|0d|a8|d9|1f|45|6e|fc|ee|d1|f8|fc|76|83|bb|3c|97|d4|1a|87|30|37|bd|6d|38|c2|34|1c|f4|d3|
-c0|c7|47|23|53|1c|66|a1|28|c8|c4|26|2f|cf|f8|31|81|0f|ba|70|91|66|d9|b5|85|ac|88|9b|1a|1c|66|11|
-87|1a|a8|7e|00|
+55|5d|65|fa|56|c4|7e|12|0c|ac|8e|1c|79|4c|ad|26|2e|64|56|3b|8f|2c|19|5d|d2|cb|16|04|78|c8|de|f2|
+81|82|80|ef|69|c4|43|7c|d2|37|01|9d|ae|aa|46|78|06|e4|07|0a|a5|86|02|87|64|a4|81|c2|c8|36|a2|f8|
+26|10|56|c2|a3|f4|17|6d|92|61|91|8e|6a|a5|af|c5|3a|6b|33|0e|4d|4e|78|0f|47|e1|ab|cd|1c|32|66|71|
+7a|67|5f|16|00|
+file_arr_len:46
+Secretkey bytes are:
+3b|82|6c|af|3f|4a|1d|ca|0a|4a|28|41|e0|a2|4a|26|88|72|84|0c|ce|c8|e8|ef|a1|a9|fe|17|79|f9|55|ed|00|00|00|00|00|00|00|00|00|00|00|00|00|00|00|00|00|00|00|00|00|00|00|00|00|00|00|00|00|00|00|00|
+Publickey bytes are:
+74|1e|1f|0e|a6|e5|f9|91|31|4b|ae|cd|0b|0d|a2|27|b1|41|4b|40|c6|e0|cd|86|16|92|3e|60|e8|2b|13|22|f5|d2|9d|3e|73|cb|ba|72|60|90|d5|60|f0|5f|4d|82|8e|1d|a1|46|74|62|6d|bb|f2|c9|b9|da|d1|71|32|d4|
+Printing file signature
+File signature size is:64
+bc|7d|d1|e9|b2|84|16|69|db|de|df|bb|c8|31|9e|3b|5d|e3|c1|90|65|2d|c2|93|5b|f6|a7|d3|68|2b|64|b1|38|67|f9|f1|73|1b|3e|bf|60|28|10|2f|22|12|d8|b7|f8|2f|1d|7c|a7|e8|4d|49|39|22|d2|b7|eb|9b|e7|0e|file_arr_recipient_len:0
+Printing file_arr_recipient_byte contents:
