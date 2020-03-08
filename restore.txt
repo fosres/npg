@@ -165,10 +165,13 @@ unsigned char * file_to_arr(unsigned char*filename,unsigned long long int * file
 
 void sign_message(unsigned char *sig,unsigned long long *siglen_p,const unsigned char * m,unsigned long long mlen,const unsigned char *sk)	{
 	
-	if (crypto_sign_detached(sig,siglen_p,m,mlen,sk)==-1)
-	{
-		fprintf(stderr,"Error:sign_message returned -1. Digital Signature may have failed\n");
-	}
+	if ( crypto_sign_detached(sig,siglen_p,m,mlen,sk) == -1 )	{
+		
+		fprintf(stderr,"Error:crypto_sign_detached returned -1\n");
+
+		exit(1);
+
+	}	
 
 }
 
@@ -181,12 +184,20 @@ int verify_detached_signed_message(unsigned char*sig,const unsigned char *m,unsi
 	}
 
 	else							{
-		printf("Congrats! Verification emailed\n");
+		printf("Congrats! Verification of message succeeded\n");
 
 	}
 
 
 }
+
+#if 0
+int verify_signed_message(unsigned char *sm,unsigned long long *smlen_p,const unsigned char *m,unsigned long long int mlen,const unsigned char *sk)	{
+	
+	if ( crypto_sign	
+
+}
+#endif
 
 int
 main(int argc,char**argv)
@@ -359,7 +370,7 @@ main(int argc,char**argv)
 	
 	unsigned long long int file_arr_len = 0;	
 	
-	unsigned char * file_arr = file_to_arr(argv[1],&file_arr_len);
+	unsigned char * file_arr = file_to_arr(dest,&file_arr_len);
 
 	printf("file_arr_len:%llu\n",file_arr_len);
 
@@ -375,8 +386,6 @@ main(int argc,char**argv)
 
 	unsigned long long int file_arr_recipient_len = 0;
 
-
-//	sign_message(file_sig,&file_arr_signed_len,file_arr,file_arr_len,secretkey);	
 	
 	unsigned char sign_input[5] = "This\0";	
 	
@@ -390,6 +399,8 @@ main(int argc,char**argv)
 	
 	crypto_sign_keypair(sign_publickey,sign_secretkey);
 
+	sign_message(file_sig,NULL,file_arr,file_arr_len,sign_secretkey);
+#if 0
 	if (crypto_sign_detached(file_sig,NULL,file_arr,file_arr_len,sign_secretkey) == -1 )	{
 		
 		fprintf(stderr,"Error:crypto_sign_detached returned -1\n");
@@ -397,7 +408,7 @@ main(int argc,char**argv)
 		exit(1);
 
 	}	
-
+#endif
 	i = 0;
 
 	printf("File signature size is:%llu\n",file_arr_signed_len);
@@ -412,26 +423,13 @@ main(int argc,char**argv)
 	}
 	
 	putchar(0xa);
-#if 0
-	verify_signed_message(file_arr_recipient,&file_arr_recipient_len,file_arr_signed,file_arr_signed_len,publickey);	
-#endif
+	
 	printf("file_arr_len is %llu\n",file_arr_len);
 
 	printf("Verifying crypto_signature\n");
 	
 	verify_detached_signed_message(file_sig,file_arr,file_arr_len,sign_publickey);
-#if 0
-	if ( crypto_sign_verify_detached(file_sig,file_arr,file_arr_len,sign_publickey) != 0 )	{
-		
-		fprintf(stderr,"Error:Signed message verification failed!\n");
-
-	}
-
-	else											{
-		printf("Congrats: Verification of signature worked\n");
-
-	}
-#endif	
+	
 	i = 0;
 	
 	printf("file_arr_recipient_len:%llu\n",file_arr_recipient_len);
