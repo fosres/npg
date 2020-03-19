@@ -1,0 +1,9 @@
+March 18, 2020 7:57 PM
+
+1. Its great that npg can take down phishing, spamming, spear phishing, and spoofing. But the only one it will not necessarily take down in pharming.
+
+This is where a hacker puts a website on the web that looks like the real thing.
+
+Today, even with advanced encryption this is still possible through an Internationalized Name Domain Homograph Attack. Today's mitigations simply detect if a URL uses different localizations in its URL. You should at least add a feature to that in your secure email server.
+
+You should aim to increase demand for the complement with all the free-of-charge products you make so they will be tempted to purchase your email server.
